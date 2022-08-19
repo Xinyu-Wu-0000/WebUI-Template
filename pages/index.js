@@ -4,7 +4,7 @@ import { Checkbox } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useSetRecoilState } from 'recoil'
-import { darkTheme } from '../componens/atom'
+import { darkTheme } from '../components/atom'
 import styles from '../styles/Home.module.css'
 
 function ThemeSwitch() {

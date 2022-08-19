@@ -2,8 +2,8 @@ import { ThemeProvider } from '@emotion/react'
 import { CssBaseline, StyledEngineProvider } from '@mui/material'
 import { useEffect } from 'react'
 import { RecoilRoot, useRecoilValue } from 'recoil'
-import { darkTheme, wsInstance } from '../componens/atom'
-import { dark_theme, light_theme } from '../componens/MUI_Theme'
+import { darkTheme, wsInstance } from '../components/atom'
+import { dark_theme, light_theme } from '../components/MUI_Theme'
 import '../styles/globals.css'
 
 
