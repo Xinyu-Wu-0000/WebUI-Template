@@ -1,34 +1,154 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# set up nextjs, recoil, MUI, tailwindcss, websocket
 
-## Getting Started
-
-First, run the development server:
+## Create nextjs app
 
 ```bash
-npm run dev
-# or
-yarn dev
+npx create-next-app appname
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup recoil
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```bash
+npm install recoil
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+wrap react component tree with:
+```js
+<RecoilRoot>
+</RecoilRoot>
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Setup MUI
 
-## Learn More
+```bash
+npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/icons-material
+```
 
-To learn more about Next.js, take a look at the following resources:
+### add font and font-icon
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`./pages/_document.js`:
+```js
+import { Html, Head, Main, NextScript } from 'next/document'
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+export default function Document() {
+    return (
+        <Html>
+            <Head>
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+                />
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+                />
+            </Head>
+            <body>
+                <Main />
+                <NextScript />
+            </body>
+        </Html>
+    )
+}
+```
 
-## Deploy on Vercel
+### add Theme and CssBaseLine
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+add theme flag as a recoil atom:
+```js
+export const darkTheme = atom(
+    {
+        key: 'darkTheme',
+        default: true
+    }
+)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+add dark/light theme: `./components/MUI_theme.js`
+```js
+import { createTheme } from "@mui/material/styles";
+
+export const dark_theme = createTheme({
+    palette: {
+        mode: 'dark',
+        background: {
+            default: '#000000',
+            paper: '#201e1e',
+        }
+    },
+});
+
+export const light_theme = createTheme({
+    palette: {
+        mode: 'light',
+    },
+});
+```
+
+wrap react component tree with:
+```js
+<ThemeProvider theme={darkTheme ? dark_theme : light_theme}></ThemeProvider>
+```
+
+put before react component tree:
+```js
+<CssBaseline />
+```
+
+## Setup tailwindcss
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+add to `tailwind.config.js` content list
+```js
+"./components/*.{js,ts,jsx,tsx}",
+"./pages/*.{js,ts,jsx,tsx}",
+"./pages/**/*.{js,ts,jsx,tsx}",
+"./components/**/*.{js,ts,jsx,tsx}",
+```
+
+add to `tailwind.config.js`
+```js
+corePlugins: {
+preflight: false,
+},
+important: '#__next'
+```
+
+add to `styles/globals.css`
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+``` 
+
+wrap react component tree with:
+```js
+<StyledEngineProvider injectFirst>
+</StyledEngineProvider>
+```
+
+## Setup WebSocket
+
+add it as a recoil atom:
+```js
+export const wsInstance = atom({
+    key: 'wsInstance',
+    default: ((typeof window) !== "undefined") ? new WebSocket("ws://127.0.0.1:7080") : null
+}
+)
+```
+
+add the onmassage callback in a `useEffect`
+```js
+const ws = useRecoilValue(wsInstance)
+useEffect(() => {
+ws.onmessage = (event) => {
+    console.log(event.data)
+}
+});
+```

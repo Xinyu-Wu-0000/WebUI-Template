@@ -1,6 +1,22 @@
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import { Checkbox } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useSetRecoilState } from 'recoil'
+import { darkTheme } from '../componens/atom'
 import styles from '../styles/Home.module.css'
+
+function ThemeSwitch() {
+  const setDark = useSetRecoilState(darkTheme)
+  function switchTheme(event) {
+    setDark(event.target.checked ? true : false)
+  }
+  return (
+    <Checkbox icon={<LightModeIcon />} checkedIcon={<DarkModeIcon />} defaultChecked={true} onChange={switchTheme} >
+    </Checkbox>
+  );
+}
 
 export default function Home() {
   return (
@@ -12,13 +28,16 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
+        <div className='absolute right-[1rem] top-[1rem]'>
+          <ThemeSwitch></ThemeSwitch>
+        </div>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
         <p className={styles.description}>
           Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
+          <code className='text-blue-500 border border-solid'>pages/index.js</code>
         </p>
 
         <div className={styles.grid}>
